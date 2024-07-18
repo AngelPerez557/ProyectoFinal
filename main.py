@@ -6,7 +6,7 @@ pg.init()
 
 
 #Pantalla o Ventana
-w,h=(1000,600)
+w,h=(1366,760)
 PANTALLA = pg.display.set_mode((w,h))
 FPS = 30
 RELOJ = pg.time.Clock()
