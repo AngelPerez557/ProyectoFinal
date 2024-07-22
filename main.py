@@ -6,10 +6,29 @@ pg.init()
 
 
 #Pantalla o Ventana
-w,h=(1366,760)
+w,h=(1000,600)
 PANTALLA = pg.display.set_mode((w,h))
 FPS = 30
 RELOJ = pg.time.Clock()
+# Colores
+COLOR_VIDA = (0,255,0)  # Rojo
+COLOR_FONDO_VIDA = (255,0,0)  # Blanco
+
+# Variables de la vida del personaje
+vida_maxima = 100
+vida_actual = 50
+
+def dibujar_barra_vida(x, y, vida, vida_max):
+    # Dimensiones de la barra de vida
+    ancho, alto = 200, 20
+    fill = (vida / vida_max) * ancho
+    borde = pg.Rect(25, 10, ancho, alto)
+    fill_rect = pg.Rect(25, 10, fill, alto)
+    
+    pg.draw.rect(PANTALLA, COLOR_FONDO_VIDA, borde)
+    pg.draw.rect(PANTALLA, COLOR_VIDA, fill_rect)
+    pg.draw.rect(PANTALLA, (0,0,0), borde, 2)  # Dibuja el borde
+
 
 
 #Fondo del juego
@@ -30,6 +49,10 @@ MIzquierda=[pg.image.load('Personajes\\Personaje1\\Izquierdo1.png'),
             pg.image.load('Personajes\\Personaje1\\Izquierdo3.png'),
             pg.image.load('Personajes\\Personaje1\\Izquierdo4.png')]
 
+framesAtaque = [pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
+                pg.image.load('Personajes\\Personaje1\\Ataque2.png'),
+                pg.image.load('Personajes\\Personaje1\\Derecho1.png')]
+
 Quieto = pg.image.load('Personajes\\Personaje1\\Derecho1.png')
 
 
@@ -48,8 +71,11 @@ cuentaSalto = 10
 #Variables de direccion
 Derecha = False
 Izquierda = False
+Ataque = False
 #Pasos
 cuentaPasos = 0
+indiceAtaque = 0
+velocidadAtaque = 5
 
 #Movimiento
 def recargarPantalla():
@@ -64,6 +90,8 @@ def recargarPantalla():
         PANTALLA.blit(fondo,(x_relativa,0))
     x-=1
 
+    dibujar_barra_vida(50, 50, vida_actual, vida_maxima)
+
     # Contador de pasos actualizado para todas las direcciones
     if cuentaPasos + 1 >= 6:
         cuentaPasos = 0
@@ -71,6 +99,10 @@ def recargarPantalla():
     # Movimiento a la Izquierda
     if Izquierda:
         PANTALLA.blit(MIzquierda[cuentaPasos // 1 % len(MIzquierda)], (int(px), int(py)))
+        cuentaPasos += 1
+    
+    elif Ataque:  # Si Ataque es True, asegúrate de que esta condición se refiera a si el personaje está atacando
+        PANTALLA.blit(framesAtaque[cuentaPasos // 1 % len(framesAtaque)], (int(px), int(py)))
         cuentaPasos += 1
 
 # Movimiento a la derecha
@@ -108,12 +140,20 @@ while ejecuta:
         px -= velocidad
         Izquierda = True
         Derecha = False
+    
+    elif keys[pg.K_v] and px > 0:
+        px -= velocidad
+        Ataque = True
+        Izquierda = False 
+        Derecha  = False
+        
 
     #Tecla D-Movimiento a la Izquierda
     elif keys[pg.K_d] and px < 900  - velocidad - ancho:
         px += velocidad
         Izquierda = False
         Derecha = True
+        Ataque = False
     #Personaje Quieto
     else:
         Izquierda = False
