@@ -55,7 +55,7 @@ framesAtaque = [pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
 Quieto = pg.image.load('Personajes\\Personaje1\\Derecho1.png')
 
 #Lucas
-FramesLucas = pg.image.load('Personajes\Lucas\Lucas1.png')
+FramesLucas = pg.image.load('Personajes\Enemigo1\Spider1.png')
 #Variables
 x=0
 px=50
@@ -91,7 +91,7 @@ def recargarPantalla():
     x-=1
 
     dibujar_barra_vida(50, 50, vida_actual, vida_maxima)
-    PANTALLA.blit(FramesLucas, (600,50 ))
+    PANTALLA.blit(FramesLucas, (600,145))
 
     # Contador de pasos actualizado para todas las direcciones
     if cuentaPasos + 1 >= 6:
@@ -141,11 +141,12 @@ while ejecuta:
         px -= velocidad
         Izquierda = True
         Derecha = False
-    
+    #Tecla Ataque
     elif keys[pg.K_v] and px > 0:
         Ataque = True
         Izquierda = False 
         Derecha  = False
+
     
         
 
