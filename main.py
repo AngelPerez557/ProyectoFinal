@@ -18,8 +18,8 @@ COLOR_FONDO_VIDA = (255,0,0)  # Blanco
 vida_maxima = 100
 vida_actual = 100
 # Variables de vida de Spider
-vida_maxima_spider = 50
-vida_actual_spider = 50
+vida_maxima_spider = 5
+vida_actual_spider = vida_maxima_spider
 
 
 def detectar_colision(rect1, rect2):
@@ -198,6 +198,26 @@ ejecuta = True
 # Bucle principal del juego
 while ejecuta:
     RELOJ.tick(FPS)
+    if vida_actual <= 0:
+        
+        print("Has muerto")
+        # Mostrar mensaje en pantalla
+        fuente = pg.font.Font(None, 74)
+        texto = fuente.render("Has muerto", True, (255, 0, 0))
+        PANTALLA.blit(texto, (PANTALLA.get_width() // 2 - texto.get_width() // 2, PANTALLA.get_height() // 2 - texto.get_height() // 2))
+        pg.display.flip()
+        pg.time.wait(3000)  # Esperar 3 segundos antes de cerrar
+        ejecuta = False
+    elif vida_actual_spider <= 0:
+        
+        print("Has ganado")
+        # Mostrar mensaje en pantalla
+        fuente = pg.font.Font(None, 74)
+        texto = fuente.render("Has ganado", True, (0, 255, 0))
+        PANTALLA.blit(texto, (PANTALLA.get_width() // 2 - texto.get_width() // 2, PANTALLA.get_height() // 2 - texto.get_height() // 2))
+        pg.display.flip()
+        pg.time.wait(3000)  # Esperar 3 segundos antes de cerrar
+        ejecuta = False 
     # Bucle del Juego
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -205,7 +225,7 @@ while ejecuta:
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_v and Derecha == False and Izquierda == False :  # Cambiado de K_SPACE a K_v
                 # Crear un nuevo objeto de colisión
-                nuevo_objeto = ObjetoColision(px + ancho, py + alto // 2, 20, 10, 5)
+                nuevo_objeto = ObjetoColision(px + ancho, py + alto // 4 + 40, 10, 40, 10)
                 objetos_colision.append(nuevo_objeto)
                 
 
