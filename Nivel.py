@@ -53,10 +53,10 @@ class Spider:
         self.y = y
         self.cuentaPasos = 0
         self.direccion = 1  # 1 para derecha, -1 para izquierda
-        self.velocidad_animacion = 15  # Controla la velocidad de la animación
+        self.velocidad_animacion = 30  # Controla la velocidad de la animación
         self.contador_animacion = 0
-        self.ancho = 64  # Asume que la imagen tiene 64 píxeles de ancho
-        self.alto = 64  # Asume que la imagen tiene 64 píxeles de alto
+        self.ancho = 200  # Asume que la imagen tiene 64 píxeles de ancho
+        self.alto = 350  # Asume que la imagen tiene 64 píxeles de alto
         self.rect = pg.Rect(x, y, ancho, alto)
         self.fragmentos = []
 
