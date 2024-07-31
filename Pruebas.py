@@ -157,6 +157,7 @@ class ObjetoColision:
 
 
 #Fondo del juego
+x = 100
 fondo=pg.image.load("Imagenes\\FondoJuego_resized.jpg").convert()
 
 #Personaje 1
@@ -166,7 +167,7 @@ Mderecha=[pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
           pg.image.load('Personajes\\Personaje1\\Derecho3.png'),
           pg.image.load('Personajes\\Personaje1\\Derecho4.png')]
 
-SaltoMovimiento= [pg.image.load('Personajes\\Personaje1\\Salto4.png')]
+SaltoMovimiento= [pg.image.load('Personajes\\Personaje1\\Salto4.png'),]
 
 MIzquierda=[pg.image.load('Personajes\\Personaje1\\Izquierdo1.png'),
             pg.image.load('Personajes\\Personaje1\\Izquierdo2.png'),
@@ -175,6 +176,7 @@ MIzquierda=[pg.image.load('Personajes\\Personaje1\\Izquierdo1.png'),
 
 framesAtaque = [pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
                 pg.image.load('Personajes\\Personaje1\\Ataque2.png'),
+                pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
                 pg.image.load('Personajes\\Personaje1\\Derecho1.png')]
 animacion_objeto = [pg.image.load(f'Personajes\Personaje1\Animacion Ataque.png') for i in range(1, 6)]
 
@@ -185,7 +187,7 @@ FramesSpider = [pg.image.load('Personajes\Enemigo1\Spider1.png'),
                pg.image.load('Personajes\Enemigo1\Spider2.png'),
                pg.image.load('Personajes\Enemigo1\Spider3.png'),]
 #Variables
-x=0
+x = 100
 px=50
 py=200
 ancho = 40
@@ -211,18 +213,26 @@ Ataque = False
 cuentaPasos = 0
 indiceAtaque = 0
 velocidadAtaque = 5
+cuentaPasos = 0
 
 #Movimiento
-def recargarPantalla():
-    global cuentaPasos
-    global x
-
-    # Fondo en movimiento
+def recargarPantalla(x, fondo):
+    global cuentaPasos  # Declarar cuentaPasos como global si es necesario
     x_relativa = x % fondo.get_rect().width
+    
     PANTALLA.blit(fondo, (x_relativa - fondo.get_rect().width, 0))
     if x_relativa < w:
         PANTALLA.blit(fondo, (x_relativa, 0))
     x -= 1
+
+    # Inicializar cuentaPasos si no está inicializada
+    if 'cuentaPasos' not in globals():
+        cuentaPasos = 0
+
+    if cuentaPasos + 1 >= 6:
+        cuentaPasos = 0
+    else:
+        cuentaPasos += 1
 
     dibujar_barra_vida(50, 50, vida_actual, vida_maxima)
     dibujar_barra_vidaSpider(750, 25, vida_actual_spider, vida_maxima_spider)  # Barra de vida de Spider
@@ -359,7 +369,7 @@ while ejecuta:
             vida_actual_spider -= 1  # Reducir vida de Spider en 1
             objetos_colision.remove(objeto)  # Eliminar objeto tras colisión
 
-    recargarPantalla()
+    recargarPantalla(x,fondo)
 
 # Salida del Juego
 pg.quit()
