@@ -176,7 +176,6 @@ MIzquierda=[pg.image.load('Personajes\\Personaje1\\Izquierdo1.png'),
 
 framesAtaque = [pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
                 pg.image.load('Personajes\\Personaje1\\Ataque2.png'),
-                pg.image.load('Personajes\\Personaje1\\Derecho1.png'),
                 pg.image.load('Personajes\\Personaje1\\Derecho1.png')]
 animacion_objeto = [pg.image.load(f'Personajes\Personaje1\Animacion Ataque.png') for i in range(1, 6)]
 
