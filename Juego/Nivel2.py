@@ -5,17 +5,20 @@ import time
 
 
 class Proyectil:
-    def __init__(self, x, y, velocidad):
+    def __init__(self, x, y, velocidad,imagen):
         self.x = x
         self.y = y
         self.velocidad = velocidad
+        self.imagen = imagen
+        self.rect = self.imagen.get_rect(topleft=(self.x, self.y))
         self.radio = 15  # Radio del proyectil
 
     def mover(self):
         self.x -= self.velocidad
+        self.rect.x = self.x
 
     def dibujar(self, pantalla):
-        pg.draw.circle(pantalla, (255, 0, 0), (self.x, self.y), self.radio)
+        pantalla.blit(self.imagen, (self.x, self.y))
 
     def colision(self, personaje_rect):
         return personaje_rect.collidepoint(self.x, self.y)
@@ -34,6 +37,8 @@ class Niveles:
         fondo = pg.transform.scale(fondo, (w, h))
         velocidad_fondo = 1
 
+        #Imagen del Proyectil
+        imagen_proyectil = pg.image.load("Personajes\\PersonajeNv2\\Animacion Ataque.png").convert_alpha()
         #Personaje1=   
         Quieto = [pg.image.load('Personajes\\PersonajeNv2\\character_idle_0.png'),
         pg.image.load('Personajes\\PersonajeNv2\\character_idle_0.png')]
@@ -59,7 +64,7 @@ class Niveles:
         intervalo_animacion = 0.1  # Intervalo de tiempo en segundos para cambiar la animación
         
         #Coordenadas Inicales
-        personaje_x, personaje_y = 54 , 250
+        personaje_x, personaje_y = 54 , 400
         velocidad_personaje = 4
         limite_inferior =  h - 350
         
@@ -72,14 +77,21 @@ class Niveles:
         
         #Variables para salto
         saltando = False
-        velocidad_salto = 15
-        gravedad = 0.5
+        velocidad_salto = 20
+        gravedad = 0.8
         velocidad_y = 0
+
+        # Fuente para la alerta de daño
+        fuente_alerta = pg.font.Font(None, 36)
+        alertas = []
+
+        def mostrar_alerta(pantalla, x, y, texto, alertas):
+            tiempo_alerta = 2  # Duración de la alerta en segundos
+            alertas.append((texto, x, y, time.time(), tiempo_alerta))
 
         # Inicializar el temporizador
         tiempo_inicial = time.time()
-        limite_minutos = 1 
-
+        limite_minutos = 0.70
         #Vida del personaje
         vida_personaje = 100
         vida_maxima  = 100
@@ -87,7 +99,9 @@ class Niveles:
         # Lista de proyectiles
         proyectiles = []
         tiempo_ultimo_proyectil = time.time()
-        intervalo_proyectil = 2  # Intervalo de tiempo en segundos para generar proyectiles
+        intervalo_proyectil = 0.5  # Intervalo de tiempo en segundos para generar proyectiles4
+        velocidad_proyectil = 9  # Aumentar la velocidad de los proyectiles
+        posicion_original_y = personaje_y
         
         ejecuta = True
         while ejecuta:
@@ -121,15 +135,15 @@ class Niveles:
                     tiempo_ultimo_cambio = time.time()
                     indice_animacion = (indice_animacion + 1) % len(MDerecha)  # Reiniciar la animación cuando no se presiona la tecla A
             
-            if teclas[pg.K_w] and not saltando:
-                saltando = True
-                velocidad_y = -velocidad_salto
-
-            if saltando:
-                personaje_y += velocidad_y
-                velocidad_y += gravedad
-                if personaje_y >= limite_inferior:
-                    personaje_y = limite_inferior
+            if not saltando:
+                if teclas[pg.K_SPACE]:
+                    saltando = True
+                    velocidad_salto_inicial = velocidad_salto
+            else:
+                personaje_y -= velocidad_salto_inicial
+                velocidad_salto_inicial -= gravedad
+                if personaje_y >= posicion_original_y:
+                    personaje_y = posicion_original_y
                     saltando = False
             
             #LLamamiento al fono en movimient
@@ -170,7 +184,7 @@ class Niveles:
             # Generar nuevos proyectiles
             if time.time() - tiempo_ultimo_proyectil > intervalo_proyectil:
                 tiempo_ultimo_proyectil = time.time()
-                nuevo_proyectil = Proyectil(w, random.randint(0, h), 5)
+                nuevo_proyectil = Proyectil(w, random.randint(0, h), velocidad_proyectil,imagen_proyectil) 
                 proyectiles.append(nuevo_proyectil)
 
 
@@ -178,10 +192,22 @@ class Niveles:
             for proyectil in proyectiles[:]:
                 proyectil.mover()
                 proyectil.dibujar(PANTALLA)
-                personaje_hitbox = pg.Rect(personaje_x + 40, personaje_y + 40, Quieto[0].get_width() - 80, Quieto[0].get_height() - 80)
+                personaje_hitbox = pg.Rect(personaje_x , personaje_y , Quieto[0].get_width(), Quieto[0].get_height())
                 if proyectil.colision(personaje_hitbox):
                     vida_personaje -= 10
                     proyectiles.remove(proyectil)
+                    mostrar_alerta(PANTALLA, personaje_x, personaje_y, "-1", alertas)
+                # Dibujar la hitbox del personaje
+                #pg.draw.rect(PANTALLA, (255, 255, 0), personaje_hitbox, 2)
+
+            # Dibujar alertas activas
+            for alerta in alertas[:]:
+                texto, x, y, tiempo_inicio, duracion = alerta
+                if time.time() - tiempo_inicio < duracion:
+                    alerta_render = fuente_alerta.render(texto, True, (255, 0, 0))
+                    PANTALLA.blit(alerta_render, (x, y - 50))  # Mostrar la alerta 50 píxeles arriba del personaje
+                else:
+                    alertas.remove(alerta)
 
             if minutos >= limite_minutos:
                 texto_ganado = fuente.render("¡Has ganado!", True, (255, 255, 255))
