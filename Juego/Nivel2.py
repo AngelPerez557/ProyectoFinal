@@ -182,10 +182,13 @@ class Niveles:
             pg.draw.rect(PANTALLA, (0, 255, 0), vida_actual_rect)  # Vida actual
 
             # Generar nuevos proyectiles
-            if time.time() - tiempo_ultimo_proyectil > intervalo_proyectil:
-                tiempo_ultimo_proyectil = time.time()
-                nuevo_proyectil = Proyectil(w, random.randint(0, h), velocidad_proyectil,imagen_proyectil) 
+            tiempo_actual = time.time()
+            if tiempo_actual - tiempo_ultimo_proyectil >= intervalo_proyectil:
+                x = 800  # Define la posición x del proyectil
+                y = random.randint(285, 600)  # Generar una posición y aleatoria entre 285 y 600
+                nuevo_proyectil = Proyectil(x, y, velocidad_proyectil, imagen_proyectil)
                 proyectiles.append(nuevo_proyectil)
+                tiempo_ultimo_proyectil = tiempo_actual
 
 
             # Mover y dibujar proyectiles
@@ -198,7 +201,7 @@ class Niveles:
                     proyectiles.remove(proyectil)
                     mostrar_alerta(PANTALLA, personaje_x, personaje_y, "-1", alertas)
                 # Dibujar la hitbox del personaje
-                #pg.draw.rect(PANTALLA, (255, 255, 0), personaje_hitbox, 2)
+                pg.draw.rect(PANTALLA, (255, 255, 0), personaje_hitbox, 2)
 
             # Dibujar alertas activas
             for alerta in alertas[:]:
@@ -221,4 +224,3 @@ class Niveles:
             pg.time.delay(10)
 
         pg.quit()
-Niveles.Nivel2()
